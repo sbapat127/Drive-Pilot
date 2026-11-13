@@ -1,8 +1,7 @@
 import sqlite3
 import click
 from flask import current_app, g
- 
- 
+
 def get_db():
     """One connection per request, stored on Flask's g object."""
     if "db" not in g:

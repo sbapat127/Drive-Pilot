@@ -37,3 +37,29 @@ def code_generator(instructor_id):
 					db.commit()
 					codeassigned = True
 					return instructor_pairing_code
+
+
+def link_student_to_instructor(student_id, linking_code):
+	db = get_db()
+	get_instructor_id = db.execute(
+	'''SELECT instructor_id
+	FROM instructor
+	WHERE linking_code = ?''',
+		(linking_code,)
+	).fetchone()
+
+	if get_instructor_id is None:
+		raise ValueError ("linking_code doesn't link to an instructor")
+	else:
+		instructor_id = get_instructor_id[0]
+	updatestudent = db.execute(
+		'''UPDATE student
+		SET instructor_id = ?
+		WHERE student_id = ?''',
+		(instructor_id, student_id,)
+	)
+	if updatestudent.rowcount == 1:
+		db.commit()
+		return True
+	else:
+		return False
