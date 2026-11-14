@@ -16,7 +16,7 @@ DROP TABLE IF EXISTS account;
  
 CREATE TABLE account (
     account_id    INTEGER PRIMARY KEY AUTOINCREMENT,
-    email         TEXT NOT NULL UNIQUE,
+    username         TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     account_type  TEXT NOT NULL CHECK (account_type IN ('STUDENT','INSTRUCTOR')),
     first_name    TEXT NOT NULL,

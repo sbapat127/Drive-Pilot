@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drive-Pilot Registration</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+        <br><br>
+    
+    <h1>Create an Account</h1>
+
+    <form method="POST" action="{{ url_for('auth.register') }}">
+        {% if success %}
+        <p>{{ success }}</p>
+        {% endif %} 
+        
+        {% if linking_code %}
+        <p>Your instructor linking code is: <strong>{{ linking_code }}</strong></p>
+        {% endif %}
+
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" required>
+
+        <br><br>
+
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" required>
+
+        <br><br>
+
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        
+        <br><br>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        
+        <br><br>
+        
+        <label for="confirm_password"> Confirm Password:</label>
+        <input type="password" id="confirm_password" name="confirm_password" required>   
+
+        <br><br>
+        
+        <label for="account_type">Account Type:</label>
+
+        <select id="account_type" name="account_type" onchange="toggleAccountFields()" required>
+            <option value="">Select account type</option>
+            <option value="STUDENT">Student</option>
+            <option value="INSTRUCTOR">Instructor</option>
+        </select>
+
+        <br><br>
+        <div id = "student_fields">
+        <label for="transmission_type">Type of Car Driven:</label>
+
+        <select id="transmission_type" name="transmission_type" required>
+            <option value="">Select type of car you are learning</option>
+            <option value="MANUAL">Manual</option>
+            <option value="AUTOMATIC">Automatic</option>
+        </select>
+        
+        <br><br>
+        
+        <label for="address">Enter Address:</label>
+        <textarea id="address" name="address" rows="3" required></textarea>
+
+        </div>
+        
+        <br><br>
+        <div id= "instructor_fields">
+        <label for="adi_number"> ADI Number:</label>
+        <input type="text" id="adi_number" name="adi_number" required>   
+        <br><br>
+        </div>
+                
+        <button type="submit">Create Account</button>
+    </form>
+
+<script>
+const accountType = document.getElementById("account_type");
+const studentFields = document.getElementById("student_fields");
+const instructorFields = document.getElementById("instructor_fields");
+const transmissionType = document.getElementById("transmission_type");
+const address = document.getElementById("address");
+const adiNumber = document.getElementById("adi_number");
+studentFields.style.display = "none";
+instructorFields.style.display = "none";
+transmissionType.disabled = true;
+address.disabled = true;
+adiNumber.disabled = true;
+function toggleAccountFields() {
+        if (accountType.value === "STUDENT") {
+        studentFields.style.display = "block";
+        instructorFields.style.display = "none";
+        transmissionType.disabled = false;
+        address.disabled= false;
+        adiNumber.disabled = true;
+    } 
+    else if (accountType.value === "INSTRUCTOR") {
+        studentFields.style.display = "none";
+        instructorFields.style.display = "block";
+        transmissionType.disabled = true;
+        address.disabled = true;
+        adiNumber.disabled = false;
+    }
+}
+toggleAccountFields();
+</script>   
+</body>
+</html>

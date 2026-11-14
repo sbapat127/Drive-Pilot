@@ -20,8 +20,7 @@ def create_app(test_config=None):
     def index():
         return "<p>Hello, World!</p>"
  
-    # Blueprints get registered here as you build them, e.g.
-    # from . import auth
-    # app.register_blueprint(auth.bp)
- 
+    #Blueprints get registered here as you build them, e.g.
+    from . import auth
+    app.register_blueprint(auth.bp)
     return app

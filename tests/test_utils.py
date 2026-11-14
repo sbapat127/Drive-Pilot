@@ -20,9 +20,9 @@ def test_code_is_six_alphanumeric_characters(app):
     db = get_db()
     cursor = db.execute(
     """INSERT INTO account
-    (email, password_hash, account_type, first_name, last_name)
+    (username, password_hash, account_type, first_name, last_name)
     VALUES (?, ?, ?, ?, ?)""",
-    ("test@example.com", "test_hash", "INSTRUCTOR", "Test", "Instructor")
+    ("example_username", "test_hash", "INSTRUCTOR", "Test", "Instructor")
     )
     account_id = cursor.lastrowid
     instructor_cursor = db.execute(
@@ -47,9 +47,9 @@ def test_code_retries_when_already_exists(app, monkeypatch):
     db = get_db()
     cursor = db.execute(
     """INSERT INTO account
-    (email, password_hash, account_type, first_name, last_name)
+    (username, password_hash, account_type, first_name, last_name)
     VALUES (?, ?, ?, ?, ?)""",
-    ("test@example.com", "test_hash", "INSTRUCTOR", "Test", "Instructor")
+    ("example_username", "test_hash", "INSTRUCTOR", "Test", "Instructor")
     )
     account_id = cursor.lastrowid
     instructor_cursor = db.execute(
@@ -84,9 +84,9 @@ def test_code_generator_rejects_invalid_instructor_id(app):
     db = get_db()
     cursor = db.execute(
     """INSERT INTO account
-    (email, password_hash, account_type, first_name, last_name)
+    (username, password_hash, account_type, first_name, last_name)
     VALUES (?, ?, ?, ?, ?)""",
-    ("test@example.com", "test_hash", "INSTRUCTOR", "Test", "Instructor")
+    ("example_username", "test_hash", "INSTRUCTOR", "Test", "Instructor")
     )
     account_id = cursor.lastrowid
     instructor_cursor = db.execute(
@@ -110,9 +110,9 @@ def test_successful_linking(app):
     db = get_db()
     cursor = db.execute(
     """INSERT INTO account
-    (email, password_hash, account_type, first_name, last_name)
+    (username, password_hash, account_type, first_name, last_name)
     VALUES (?, ?, ?, ?, ?)""",
-    ("test@example.com", "test_hash", "INSTRUCTOR", "Test", "Instructor")
+    ("example_username", "test_hash", "INSTRUCTOR", "Test", "Instructor")
     )
     account_id = cursor.lastrowid
     instructor_cursor = db.execute(
@@ -124,9 +124,9 @@ def test_successful_linking(app):
     instructor_id = instructor_cursor.lastrowid
     cursor = db.execute(
     """INSERT INTO account
-    (email, password_hash, account_type, first_name, last_name)
+    (username, password_hash, account_type, first_name, last_name)
     VALUES (?, ?, ?, ?, ?)""",
-    ("teststudent@example.com", "teststudent_hash", "STUDENT", "John", "Doe",)
+    ("test_student", "teststudent_hash", "STUDENT", "John", "Doe",)
     )
     student_account_id = cursor.lastrowid
     student_cursor = db.execute(
@@ -148,9 +148,9 @@ def test_link_student_rejects_invalid_linking_code(app):
     db = get_db()
     cursor = db.execute(
     """INSERT INTO account
-    (email, password_hash, account_type, first_name, last_name)
+    (username, password_hash, account_type, first_name, last_name)
     VALUES (?, ?, ?, ?, ?)""",
-    ("teststudent@example.com", "teststudent_hash", "STUDENT", "John", "Doe")
+    ("test_student", "teststudent_hash", "STUDENT", "John", "Doe")
     )
     account_id = cursor.lastrowid
     student_cursor = db.execute(
