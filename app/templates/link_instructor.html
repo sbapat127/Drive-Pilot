@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drive-Pilot Linking Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <br><br>
+    
+    <h1>Linking with your instructor</h1>
+
+    <br><br>
+
+    <p> This is a six-character alphanumeric code that should be on your instructors account. 
+        If you don't know it yet just leave this page and return to homepage, 
+        but until you have entered the linking code you won't be able to see your instructor's information. 
+    </p>
+
+    <br><br>
+
+    {% if success %}
+        <p>{{ success }}</p>
+    {% endif %}
+
+    {% if error %}
+        <p>{{ error }}</p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('auth.link_instructor') }}">
+
+        <label for="linking_code">Linking code:</label>
+        <input type="text" id="linking_code" name="linking_code" required>
+
+        <br><br>
+
+        <button type="submit">Submit Code</button>
+    </form>
+
+ <script>
+/// const linkingCode = document.getElementById("linking_code");
+
+</script>   
+</body>
+</html>

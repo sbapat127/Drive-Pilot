@@ -18,7 +18,7 @@ def create_app(test_config=None):
  
     @app.route("/")
     def index():
-        return "<p>Hello, World!</p>"
+        return "<h1>Blank Homepage</h1>"
  
     #Blueprints get registered here as you build them, e.g.
     from . import auth

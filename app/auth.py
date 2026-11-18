@@ -1,12 +1,13 @@
 import string
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, session
 bp = Blueprint("auth", __name__)
 from .db import get_db
-from app.utils import code_generator
+from app.utils import code_generator, link_student_to_instructor
 
 @bp.route("/register", methods=["GET", "POST"])
 def register():
+    #password validation (includes a number, lowercase and uppercase letter)
     if request.method == "POST":
         oneupper = False
         onelower = False
@@ -38,12 +39,14 @@ def register():
         db = get_db()
         columns = db.execute("PRAGMA table_info(account)").fetchall()
         print("ACTUAL ACCOUNT COLUMNS:", [column["name"] for column in columns], flush=True)
+        #check username is unique
         doesusernamealreadyexist = db.execute(
 			'''SELECT account_id 
 			FROM account
 			WHERE username = ?''',
 			(username,)
 			).fetchone()
+        print("DUPLICATE CHECK:", doesusernamealreadyexist, flush=True)
         if doesusernamealreadyexist is not None:
             return render_template("register.html", error="Username already exists")
         createaccount = db.execute(
@@ -76,3 +79,79 @@ def register():
         linking_code=linking_code if account_type == "INSTRUCTOR" else None
         )
     return render_template("register.html")
+
+@bp.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        db = get_db()
+        
+        #find the account using the submitted username
+        account = db.execute( 
+        '''SELECT account_id, password_hash, account_type
+        FROM account
+        WHERE username = ?''', (username,)
+        ).fetchone()
+
+        #Check whether the account exists and the password is correct
+        if account is not None and check_password_hash(account["password_hash"],password):
+            session["account_id"] = account["account_id"]
+            session["account_type"] = account["account_type"]
+            return render_template("login.html", success="Login successful!",)
+        else:
+            return render_template("login.html", error = "Invalid username or password")
+    return render_template("login.html")
+
+@bp.route("/link_instructor", methods=["GET", "POST"])
+def link_instructor():
+    #making sure account trying to link is a student account
+    if "account_id" not in session:
+        return redirect(url_for("auth.login"))
+    if session.get("account_type") != "STUDENT":
+        return render_template("link_instructor.html", error="Only students can link to an instructor.")
+    db = get_db()
+    student = db.execute( 
+    '''SELECT student_id, instructor_id
+    FROM student
+    WHERE account_id = ?''', (session["account_id"],)
+    ).fetchone()
+
+    if student is None:
+        return render_template("link_instructor.html", error="Student account could not be found")
+    if request.method == "POST":
+        linking_code = request.form.get("linking_code","").strip()
+        if not linking_code:
+            return render_template("link_instructor.html", error="Please enter an instructor linking code.")
+        try:
+            result = link_student_to_instructor(student["student_id"], linking_code)
+            if result:
+                return render_template("link_instructor.html", success="You have successfully linked to your instructor!")
+            else:
+                return render_template("link_instructor.html", error="Student account could not be linked.")
+        except ValueError:
+            return render_template("link_instructor.html", error="Invalid instructor linking code.")
+    return render_template("link_instructor.html")
+
+@bp.route("/instructor_timetabling", methods=["GET", "POST"])
+def instructor_timetabling():
+    db = get_db()
+    instructor  = db.execute(
+    '''SELECT instructor_id
+    FROM instructor
+    WHERE account_id = ?''',
+    (session["account_id"],)
+    ).fetchone()
+    if instructor is None:
+        return render_template("instructor_timetable.html", error="Instructor account could not be found.")
+    instructor_id = instructor["instructor_id"]
+    if "account_id" not in session:
+        return redirect(url_for("auth.login"))
+    if session.get("account_type") != "INSTRUCTOR":
+        return render_template("instructor_timetable.html", error="Only instructors can manage timetables.")
+    db.execute(
+        '''INSERT INTO, timetable (instructor_id, timetable_status)
+        VALUES (?, ?)''', (instructor_id, "DRAFT")
+    )
+    db.commit()
+    return "Timetable created successfully!"

@@ -5,6 +5,7 @@ upperletters = string.ascii_uppercase
 lowerletters = string.ascii_lowercase
 digits = string.digits
 def code_generator(instructor_id):
+	#design a 6 digit code of numbers, lowercase and uppercase letters generated at random
 	codeassigned = False
 	db = get_db()
 	instructor = db.execute(
@@ -22,6 +23,7 @@ def code_generator(instructor_id):
 				randvalue = random.choice(choices)
 				code = code + randvalue
 			instructor_pairing_code = code
+			#check that code isn't generated already
 			result = db.execute(
 			'''SELECT instructor_id 
 			FROM instructor 
@@ -41,17 +43,19 @@ def code_generator(instructor_id):
 
 def link_student_to_instructor(student_id, linking_code):
 	db = get_db()
+	#get a linking code from instructor's login details (acountid)
 	get_instructor_id = db.execute(
 	'''SELECT instructor_id
 	FROM instructor
 	WHERE linking_code = ?''',
 		(linking_code,)
 	).fetchone()
-
+	#check that the linking code is linked to an instructor
 	if get_instructor_id is None:
 		raise ValueError ("linking_code doesn't link to an instructor")
 	else:
 		instructor_id = get_instructor_id[0]
+	#update student with instructor's id
 	updatestudent = db.execute(
 		'''UPDATE student
 		SET instructor_id = ?

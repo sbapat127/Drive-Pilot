@@ -32,6 +32,7 @@ def test_code_is_six_alphanumeric_characters(app):
         (account_id, None, None)
     )
     instructor_id = instructor_cursor.lastrowid
+    #calls the code generator function
     code = code_generator(instructor_id)
     coderecord = db.execute(
     '''SELECT linking_code

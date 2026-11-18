@@ -1,0 +1,49 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructor Timetable</title>
+    <link rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"> 
+</head>
+
+<body>
+    <h1>Manage Your Availability</h1>
+    <div class="calendar">
+        <div class="calendar-header">
+            <button id="previous-week">Previous</button>
+            <h2 id="week-heading">Current Week</h2>
+            <button id="next-week">Next</button>
+        </div>
+        <div class="calendar-grid" id="calendar-grid">
+        </div>
+    </div>
+
+
+<div class="calendar-grid">
+
+    <div class="time-column">
+        <div class="day-heading"></div>
+        {% for hour in range(6, 23) %}
+            <div class="time-cell">
+                {{ "%02d:00"|format(hour) }}
+            </div>
+        {% endfor %}
+    </div>
+
+    {% for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] %}
+        <div class="day-column">
+            <div class="day-heading">{{ day }}</div>
+
+            {% for hour in range(6, 23) %}
+                <div class="time-cell"></div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+</div>
+
+</body>
+</html>
