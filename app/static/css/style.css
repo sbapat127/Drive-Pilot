@@ -12,8 +12,9 @@
 }
 
 .calendar-grid {
-    display: grid;
-    grid-template-columns: 65px repeat(7, minmax(100px, 1fr));
+    display: grid !important;
+    grid-template-columns: 65px repeat(7, minmax(100px, 1fr)) !important;
+    width: 100%;
     border: 1px solid #ddd;
     overflow-x: auto;
 }
@@ -21,7 +22,11 @@
 .time-column,
 .day-column {
     display: grid;
-    grid-template-rows: 45px repeat(17, 60px);
+    grid-template-rows: 45px repeat(17, 45px);
+}
+
+.day-column {
+    border-left: 1px solid #ddd;
 }
 
 .day-heading {
@@ -38,4 +43,13 @@
     box-sizing: border-box;
     padding: 4px;
     font-size: 12px;
+}
+
+.calendar-cell {
+    cursor: crosshair;
+    user-select: none;
+}
+
+.calendar-cell.selected {
+    background-color: #e790f9;
 }

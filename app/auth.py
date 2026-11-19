@@ -136,12 +136,14 @@ def link_instructor():
 @bp.route("/instructor_timetabling", methods=["GET", "POST"])
 def instructor_timetabling():
     db = get_db()
+    #get isntructor id from login
     instructor  = db.execute(
     '''SELECT instructor_id
     FROM instructor
     WHERE account_id = ?''',
     (session["account_id"],)
     ).fetchone()
+    #instructor validation
     if instructor is None:
         return render_template("instructor_timetable.html", error="Instructor account could not be found.")
     instructor_id = instructor["instructor_id"]
@@ -149,9 +151,11 @@ def instructor_timetabling():
         return redirect(url_for("auth.login"))
     if session.get("account_type") != "INSTRUCTOR":
         return render_template("instructor_timetable.html", error="Only instructors can manage timetables.")
+    #add the timetable id and status into the timetable table
     db.execute(
-        '''INSERT INTO, timetable (instructor_id, timetable_status)
+        '''INSERT INTO
+        timetable (instructor_id, timetable_status)
         VALUES (?, ?)''', (instructor_id, "DRAFT")
-    )
+        )
     db.commit()
-    return "Timetable created successfully!"
+    return render_template("instructor_timetable.html")

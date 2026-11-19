@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,39 +10,125 @@
 
 <body>
     <h1>Manage Your Availability</h1>
+
     <div class="calendar">
+
         <div class="calendar-header">
             <button id="previous-week">Previous</button>
             <h2 id="week-heading">Current Week</h2>
             <button id="next-week">Next</button>
         </div>
+
         <div class="calendar-grid" id="calendar-grid">
-        </div>
-    </div>
 
+            <div class="time-column">
+                <div class="day-heading"></div>
 
-<div class="calendar-grid">
-
-    <div class="time-column">
-        <div class="day-heading"></div>
-        {% for hour in range(6, 23) %}
-            <div class="time-cell">
-                {{ "%02d:00"|format(hour) }}
+                {% for hour in range(6, 23) %}
+                    <div class="time-cell">
+                        {{ "%02d:00"|format(hour) }}
+                    </div>
+                {% endfor %}
             </div>
-        {% endfor %}
+
+            {% for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] %}
+                <div class="day-column">
+                    <div class="day-heading">{{ day }}</div>
+
+                    {% for hour in range(6, 23) %}
+                        <div class="time-cell calendar-cell"
+                             data-day="{{ day }}"
+                             data-hour="{{ hour }}">
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+        </div>
     </div>
 
-    {% for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] %}
-        <div class="day-column">
-            <div class="day-heading">{{ day }}</div>
+    <div id="selection-summary">
+        <h3>Selected availability </h3>
+        <p id="selected-day"> No day selected</p>
+        <p id="selected-times"></p>
+    </div>
+<script>
+const calendarCells = document.querySelectorAll(".calendar-cell");
+const selectedDayDisplay = document.getElementById("selected-day");
+const selectedTimesDisplay = document.getElementById("selected-times")
+let isSelecting = false;
+let startingCell = null;
+let selectedDay = null;
 
-            {% for hour in range(6, 23) %}
-                <div class="time-cell"></div>
-            {% endfor %}
-        </div>
-    {% endfor %}
+calendarCells.forEach(cell => {
 
-</div>
+    cell.addEventListener("mousedown", function(event) {
+        event.preventDefault();
+
+        isSelecting = true;
+        startingCell = this;
+        selectedDay = this.dataset.day;
+        updateSelection(this);
+    });
+
+    cell.addEventListener("mouseover", function() {
+
+        if (!isSelecting) {
+            return;
+        }
+
+        if (this.dataset.day !== selectedDay) {
+            return;
+        }
+
+        updateSelection(this);
+    });
+
+});
+
+document.addEventListener("mouseup", function() {
+    isSelecting = false;
+});
+
+function clearSelection() {
+    calendarCells.forEach(cell => {
+        cell.classList.remove("selected");
+    });
+}
+
+function updateSelection(endingCell) {
+
+    clearSelection();
+
+    let startHour = Number(startingCell.dataset.hour);
+    let endHour = Number(endingCell.dataset.hour);
+
+    let earliestHour = Math.min(startHour, endHour);
+    let latestHour = Math.max(startHour, endHour);
+
+    calendarCells.forEach(cell => {
+
+        if (cell.dataset.day === selectedDay) {
+
+            let hour = Number(cell.dataset.hour);
+
+            if (hour >= earliestHour && hour <= latestHour) {
+                cell.classList.add("selected");
+            }
+        }
+    });
+
+    // Display the selected day
+    selectedDayDisplay.textContent = selectedDay;
+
+    // Calculate the start and end times
+    let startTime = String(earliestHour).padStart(2,"0") + ":00";
+    let endTime = String(latestHour + 1).padStart(2,"0") + ":00";
+    
+    // Display the selected times
+    selectedTimesDisplay.textContent = "From"+ startTime + "to" + endTime;
+}
+</script>
 
 </body>
 </html>
